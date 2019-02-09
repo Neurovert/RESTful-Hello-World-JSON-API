@@ -9,49 +9,45 @@
 // Dependencies
 const http = require('http');
 const url = require('url');
-const StringDecoder = require('string_decoder').StringDecoder;
-
-// My message for 2.
-message = {
-    'Hello': 'Sup World?'
-}
-messageErr = {
-    'Error': 'Request method not POST or URL not /hello'
-}
 
 // Server creation and all mechanisms
 const server = http.createServer((req, res) => {
+    // Get the parsed URL
     const parsedUrl = url.parse(req.url, true);
-    const path = parsedUrl.pathname;
-    const trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
+    // Get the route only with everything after it stripped away.
+    const route = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
+
+    // Get request method
     const method = req.method.toLowerCase();
 
-    // Get the payload,if any
-    const decoder = new StringDecoder('utf-8');
-    let payload = '';
-    if (trimmedPath == 'hello' && method == 'post') {
-        req.on('data', (data) => {
-            payload += decoder.write(data);
-        });
-        req.on('end', () => {
-            payload += decoder.end();
+    // Set the response Content-Type header to meet assignment requirements.
+    res.setHeader('Content-Type', 'application/json')
 
-            // Send the response
-            res.setHeader('Content-Type', 'application/json')
+    // Make sure the route is 'hello' and method is 'post'
+    if (route == 'hello' && method == 'post') {
+        // Take in the data send within the post request, so next steps can continue. 
+        req.on('data', () => {});
+        // Work on response, once the appropriate request is fully delivered:
+        req.on('end', () => {
+            // Set the response status
             res.writeHead(200);
-            res.end(JSON.stringify(message));
+
+            // Respond with the json message - as required in assignment.
+            res.end(JSON.stringify({
+                'message': 'Sup World!!!'
+            }));
         });
+    // In any other case respond with 404 - not found status and error message.
     } else {
-        // Not required according to assignment requirements, but...
-        // If rquest is NOT a POST method OR NOT /hello URL, then:
-        res.setHeader('Content-Type', 'application/json')
         res.writeHead(404);
-        res.end(JSON.stringify(messageErr));
+        res.end(JSON.stringify({
+            'error': 'Request method not POST or URL not /hello'
+        }));
     }
 });
 
 // Start the server
 server.listen(3000, () => {
-    console.log('The server is up and running now: address localhost:3000');
+    console.log('The server is running - try address: localhost:3000');
 });
