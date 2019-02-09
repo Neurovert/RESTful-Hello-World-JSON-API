@@ -18,19 +18,19 @@ const server = http.createServer((req, res) => {
     // Get the route only with everything after it stripped away.
     const route = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
 
-    // Get request method
+    // Get the request method
     const method = req.method.toLowerCase();
 
-    // Set the response Content-Type header to meet assignment requirements.
+    // Set the response Content-Type header to meet the assignment requirements.
     res.setHeader('Content-Type', 'application/json')
 
     // Make sure the route is 'hello' and method is 'post'
     if (route == 'hello' && method == 'post') {
-        // Take in the data send within the post request, so next steps can continue. 
+        // Take in the request data. Without this, request would linger forever or timeout waiting for data reception. 
         req.on('data', () => {});
-        // Work on response, once the appropriate request is fully delivered:
+        // Work on response once the appropriate request is fully delivered.
         req.on('end', () => {
-            // Set the response status
+            // Set the response status code
             res.writeHead(200);
 
             // Respond with the json message - as required in assignment.
@@ -38,7 +38,7 @@ const server = http.createServer((req, res) => {
                 'message': 'Sup World!!!'
             }));
         });
-    // In any other case respond with 404 - not found status and error message.
+    // In any other case respond with 404 - not found status code and error message.
     } else {
         res.writeHead(404);
         res.end(JSON.stringify({
