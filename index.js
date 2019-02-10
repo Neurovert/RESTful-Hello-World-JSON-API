@@ -38,9 +38,9 @@ const server = http.createServer((req, res) => {
                 'message': 'Sup World!!!'
             }));
         });
-    // In any other case respond with 404 - not found status code and error message.
+    // In any other case respond with 400 (bad request) status code and error message.
     } else {
-        res.writeHead(404);
+        res.writeHead(400);
         res.end(JSON.stringify({
             'error': 'Request method not POST or URL not /hello'
         }));
